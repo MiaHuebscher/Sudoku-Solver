@@ -101,7 +101,7 @@ class Environment:
         """ Output the solutions in the population """
         rslt = ""
         for eval,sol in self.pop.items():
-            rslt += str(dict(eval))+":\t"+str(sol)+"\n"
+            rslt += str(dict(eval))+":\n"+str(sol)+"\n"
         return rslt
 
 
