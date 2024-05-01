@@ -1,0 +1,1 @@
+Agents replicate the tactics I have developed over the years to efficiently solve Sudoku puzzles myself. To solve your own sudoku puzzle, download the files and insert your puzzle's data as shown in the main function of the program! Enjoy and good luck puzzling! :)
