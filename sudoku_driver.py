@@ -155,31 +155,34 @@ def fill_box(game):
 
 
 def advanced_fill(game):
+    """For each possible number, place it in a position within a box based on the number's position in other boxes"""
     game = np.array(game)
-    # Identify all places that number could go
     for num in range(1, 10):
+        # Obtain a box in the game
         for row_start in range(0, 9, 3):
             row_end = row_start + 3
             for col_start in range(0, 9, 3):
                 col_end = col_start + 3
+                # Make a copy of the game so that test changes made are not permanent
                 new_game = game.copy()
                 box = new_game[row_start:row_end, col_start:col_end]
+                # If the current number is not in the current box, find all places the number could be put in the box
                 if num not in box.reshape(9):
                     zero_rows, zero_cols = np.where(box == 0)
                     update = []
                     for row, col in zip(zero_rows, zero_cols):
                         real_row = row + row_start
                         real_col = col + col_start
-                        # Check rows and columns for conflicts
                         if num not in game[real_row, :] and num not in game[:, real_col]:
                             update.append((real_row, real_col))
-                    # Only update locations in same row or column
-                    # Check if everything in update is in the same row/col
+                    # If all locations are in the same row or column, put the number in those places in the game copy
                     if len(update) > 1 and (all(row == [row for row, col in update][0] for row, col in update) or
                                             all(col == [col for row, col in update][0] for row, col in update)):
                         for change_row, change_col in update:
                             new_game[change_row, change_col] = num
 
+                        # Loop through the game copy again and see if the placed numbers give us enough constraints to
+                        # Place numbers in the real game
                         for r_start in range(0, 9, 3):
                             r_end = r_start + 3
                             for c_start in range(0, 9, 3):
@@ -187,31 +190,26 @@ def advanced_fill(game):
                                 if r_start == row_start and c_start == col_start:
                                     pass
                                 box = game[r_start:r_end, c_start:c_end]
-                                # Check entire game with updated box
+                                # Locate all the places the number could be put
                                 zero_rows, zero_cols = np.where(box == 0)
                                 options = list(zip(zero_rows, zero_cols))
                                 for row, col in zip(zero_rows, zero_cols):
                                     real_row = row + r_start
                                     real_col = col + c_start
-                                    # Check rows and columns for conflicts
+                                    # If there is more than 1 count of the number in the same row or column of the
+                                    # Location, remove the location as an option
                                     if list(new_game[real_row, :]).count(num) > 1 or \
                                             list(new_game[:, real_col]).count(num) > 1:
                                         options.remove((row, col))
-                                # Place numbers that only have one possible place in the box
+                                # Place numbers that only have one possible location in the box, after checking if the
+                                # Location has one occurrence of the same number in the same row or column
                                 if len(options) == 1:
                                     row = options[0][0] + r_start
                                     col = options[0][1] + c_start
-                                    # add another if to check if it fits in regular game
                                     if num not in game[row, :] and num not in game[:, col]:
                                         game[row, col] = num
 
     return game
-
-
-def blah(new_game, og_game):
-    """keep plugging in random numbers until you get a solution that works; only run this after n amount of iterations
-    with no updates in the blank variable"""
-    pass
 
 
 if __name__ == "__main__":
